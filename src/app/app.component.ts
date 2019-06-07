@@ -1,24 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Increment, Decrement } from './ngrx/actions/counter.action';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  count$: Observable<number>;
+export class AppComponent implements OnDestroy {
+  count: Subscription;
   data: number;
 
   constructor(private store: Store<any>) {
-    this.count$ = this.store.pipe(select('count')).subscribe(numbers => {
+    this.count = this.store.pipe(select('count')).subscribe(numbers => {
       this.data = numbers;
     });
   }
 
-  ngOnInit() {}
+  ngOnDestroy() {
+    this.count.unsubscribe();
+  }
 
   increment() {
     this.store.dispatch(new Increment());
